@@ -57,17 +57,18 @@ class ReadBitAPIView(ModbusAPIView):
 
     def get(self, request):
         # Extract query parameters
+        ip_address = request.query_params.get("ip_address")
         m_address = request.query_params.get("register_address")
         b_address = request.query_params.get("bit_address")
 
         # Validate input parameters
-        if not all([self.host, self.port, m_address, b_address]):
+        if not all([ip_address, self.port, m_address, b_address]):
             return Response(
                 {"error": "Missing parameters (register_address, bit_address)"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        client = ModbusClientWrapper(host=self.host, port=self.port)
+        client = ModbusClientWrapper(host=ip_address, port=self.port)
 
         if client.open():
             try:
@@ -115,18 +116,19 @@ class WriteBitAPIView(ModbusAPIView):
 
     def post(self, request):
         # Extract data from request
+        ip_address = request.data.get("ip_address")
         m_address = request.data.get("register_address")
         b_address = request.data.get("bit_address")
         bit_value = request.data.get("bit_value", 1)  # Default to setting the bit (1)
 
         # Validate input parameters
-        if not all([self.host, self.port, m_address, b_address]):
+        if not all([ip_address, self.port, m_address, b_address]):
             return Response(
                 {"error": "Missing parameters (register_address, bit_address)"},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        client = ModbusClientWrapper(host=self.host, port=self.port)
+        client = ModbusClientWrapper(host=ip_address, port=self.port)
 
         if client.open():
             try:
